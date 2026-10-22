@@ -456,4 +456,46 @@ body #floating-profit.is-hidden,body #floating-statement.is-hidden{scale:1;trans
 @media(min-width:601px){
 .top-controls .parcel-donate .parcel-message{transform:none;scale:1;transform-origin:top right;width:220px;box-sizing:border-box;padding:12px;border:1px solid #c2ac7959;border-radius:12px;background:linear-gradient(140deg,#293540f5,#141e28fa);box-shadow:inset 0 1px 0 #ffffff13,0 12px 32px #0005;backdrop-filter:blur(12px);transition:none}
 }
-</style></html>
+</style><script id="team-mobile-keyboard-dropdown">
+(()=>{
+ const field=document.getElementById('loot-item'),list=document.getElementById('item-options'),viewport=window.visualViewport;
+ if(!field||!list||!viewport)return;
+ const mobile=matchMedia('(max-width:600px)'),reduced=matchMedia('(prefers-reduced-motion:reduce)');
+ let baseline=viewport.height,timer=0,scrollingUntil=0;
+ function clear(){list.style.removeProperty('max-height');}
+ function keyboardVisible(){return mobile.matches&&Math.abs(viewport.scale-1)<.05&&baseline-viewport.height>Math.max(120,baseline*.18);}
+ function adjust(){
+  timer=0;if(document.activeElement!==field||list.hidden||!keyboardVisible()){clear();return;}
+  const rect=field.getBoundingClientRect(),top=viewport.offsetTop,bottom=top+viewport.height;
+  const desired=Math.min(240,Math.max(48,viewport.height-rect.height-40));
+  const overflow=Math.max(0,rect.bottom+8+desired-(bottom-12));
+  const shift=Math.min(overflow,Math.max(0,rect.top-top-12));
+  if(shift>2&&performance.now()>scrollingUntil){scrollingUntil=performance.now()+500;window.scrollBy({top:shift,behavior:reduced.matches?'instant':'smooth'});setTimeout(schedule,520);}
+  const available=Math.floor(bottom-list.getBoundingClientRect().top-12);
+  if(available>24)list.style.maxHeight=Math.min(250,available)+'px';
+ }
+ function schedule(){clearTimeout(timer);timer=setTimeout(adjust,140);}
+ field.addEventListener('focus',()=>{baseline=Math.max(baseline,viewport.height);schedule();});
+ field.addEventListener('click',schedule);field.addEventListener('input',schedule);
+ field.addEventListener('blur',()=>{clearTimeout(timer);clear();});
+ viewport.addEventListener('resize',()=>{if(document.activeElement!==field)baseline=viewport.height;schedule();});
+ viewport.addEventListener('scroll',schedule);
+ window.addEventListener('resize',schedule,{passive:true});
+ new MutationObserver(schedule).observe(list,{attributes:true,attributeFilter:['hidden'],childList:true});
+ mobile.addEventListener('change',()=>{clear();baseline=viewport.height;});
+})();
+</script><style id="team-mobile-hub-match-relic">
+@media(max-width:600px){
+.top-controls .support-row{top:0}
+.top-controls>.hub-link-row{position:absolute;left:40px;top:0;margin:0;width:42px;z-index:31}
+.top-controls>.hub-link-row .back-to-hub{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;width:42px;min-height:25px;height:25px;padding:3px 5px;gap:3px;font-size:9px}
+.top-controls .support-row>a.support-link,.top-controls .parcel-donate summary.support-link{width:clamp(80px,calc((100vw - 120px)/2),140px);font-size:9px}
+}
+</style><script id="team-mobile-hub-placement">
+(()=>{
+ const hub=document.querySelector('.hub-link-row'),controls=document.querySelector('.top-controls');if(!hub||!controls)return;
+ const marker=document.createComment('desktop-hub-position');hub.before(marker);const mobile=matchMedia('(max-width:600px)');
+ function place(){if(mobile.matches)controls.append(hub);else marker.after(hub);}
+ mobile.addEventListener('change',place);place();
+})();
+</script></html>
