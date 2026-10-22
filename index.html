@@ -553,4 +553,25 @@ main>.top-controls{position:absolute;right:0;top:8px;margin:0;min-height:0;z-ind
 }
 </style><style id="compact-hunt-result-boxes">.metrics>.metric{padding:12px 14px;border-radius:11px}.metrics>.metric strong{font-size:23px}.metrics>.metric>span{font-size:12px}</style><style id="loot-quantity-soft-default">#loot-qty::placeholder{color:#8090a2;opacity:.6}</style><script id="loot-quantity-integers-only">
 (()=>{const field=document.getElementById('loot-qty');let last='';field.addEventListener('input',()=>{field.setCustomValidity('');if(/^[0-9]*$/.test(field.value))last=field.value;else field.value=last;});field.addEventListener('focus',()=>{last=field.value;field.setCustomValidity('');});})();
+</script><style id="floating-statement-clear-position">
+@media(min-width:601px){body #floating-statement.plate-avoiding-control{transition:opacity .2s ease,visibility 0s!important}}
+</style><script id="floating-statement-avoid-controls">
+(()=>{
+ const plate=document.getElementById('floating-statement');if(!plate)return;
+ const desktop=matchMedia('(min-width:601px)');let frame=0;
+ function intersects(a,b,gap=10){return a.left<b.right+gap&&a.right>b.left-gap&&a.top<b.bottom+gap&&a.bottom>b.top-gap;}
+ function place(){frame=0;if(!desktop.matches){plate.style.removeProperty('top');plate.style.removeProperty('visibility');plate.classList.remove('plate-avoiding-control');return;}if(plate.classList.contains('is-hidden')||document.querySelector('dialog[open]'))return;
+  const rect=plate.getBoundingClientRect(),h=plate.offsetHeight,preferred=innerHeight/2+3;
+  const obstacles=[...document.querySelectorAll('main button,main input,main select,main a,main h1,main h2,main .supply-column-row,main .metric,#floating-profit,.parcel-donate[open] .parcel-message')].filter(node=>node!==plate&&node.getClientRects().length&&getComputedStyle(node).visibility!=='hidden').map(node=>node.getBoundingClientRect()).filter(r=>r.width&&r.height&&r.bottom>0&&r.top<innerHeight);
+  const candidate=y=>({left:rect.left,right:rect.right,top:y,bottom:y+h});
+  const positions=[preferred,...obstacles.flatMap(r=>[r.bottom+12,r.top-h-12]),innerHeight-h-18,18].filter(y=>y>=12&&y+h<=innerHeight-12).sort((a,b)=>Math.abs(a-preferred)-Math.abs(b-preferred));
+  const safe=positions.find(y=>!obstacles.some(r=>intersects(candidate(y),r)));
+  if(safe!==undefined){const moved=Math.abs(safe-preferred)>2;plate.classList.toggle('plate-avoiding-control',moved);plate.style.setProperty('top',safe+'px','important');plate.style.removeProperty('visibility');}else{plate.style.setProperty('visibility','hidden','important');}
+ }
+ function schedule(){if(!frame)frame=requestAnimationFrame(place);}
+ window.addEventListener('scroll',schedule,{passive:true});window.addEventListener('resize',schedule,{passive:true});
+ new MutationObserver(schedule).observe(document.querySelector('main'),{subtree:true,childList:true});
+ new MutationObserver(schedule).observe(plate,{attributes:true,attributeFilter:['class']});
+ desktop.addEventListener('change',schedule);schedule();
+})();
 </script></html>
