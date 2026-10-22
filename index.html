@@ -231,7 +231,7 @@ $('share-statement').onclick=share;const update=()=>{$('share-statement-label').
  floating.onclick=()=>original.click();let hidden=false,timer;
  function update(){const missing=state.supplies.some(r=>r.price===null&&usedSupply(r));const cost=state.supplies.reduce((n,r)=>n+state.players.reduce((sum,_,i)=>sum+Math.round((r.price||0)*100*supplyQty(r,i)),0),0);const loot=state.players.reduce((n,p)=>n+Math.round(p.gold*100),0)+state.loot.reduce((n,r)=>n+Math.round(r.price*100)*r.qty,0);const net=loot-cost;badge.classList.toggle('waste',!missing&&net<0);badge.classList.toggle('pending',missing);badge.querySelector('.floating-profit-label').textContent=missing?'—':net<0?'Waste':'Profit';const value=badge.querySelector('strong');value.replaceChildren(document.createTextNode(missing?'—':Math.ceil(Math.abs(net)/100).toLocaleString(document.documentElement.lang)));if(!missing){const unit=document.createElement('small');unit.textContent=' '+goldUnit(Math.ceil(Math.abs(net)/100));value.append(unit);}floating.setAttribute('aria-label',({pt:'Extrato',en:'Statement',es:'Resumen'})[document.documentElement.lang.split('-')[0]]||'Statement');}
  function aim(element,target){const before=element.style.transform;element.style.transform='none';const r=element.getBoundingClientRect();element.style.transform=before;const t=target.getBoundingClientRect();element.style.setProperty('--dock-x',(t.left+t.width/2-r.left-r.width/2)+'px');element.style.setProperty('--dock-y',(t.top+t.height/2-r.top-r.height/2)+'px');}
- function dock(value){if(value){aim(floating,original);aim(badge,profitTarget);}hidden=value;floating.classList.toggle('is-hidden',value);badge.classList.toggle('is-hidden',value);floating.inert=value;floating.setAttribute('aria-hidden',String(value));badge.setAttribute('aria-hidden',String(value));}
+ function dock(value){if(matchMedia('(max-width:600px)').matches)value=false;if(value){aim(floating,original);aim(badge,profitTarget);}hidden=value;floating.classList.toggle('is-hidden',value);badge.classList.toggle('is-hidden',value);floating.inert=value;floating.setAttribute('aria-hidden',String(value));badge.setAttribute('aria-hidden',String(value));}
  const observer=new IntersectionObserver(entries=>{const e=entries[0],hide=e.isIntersecting&&e.intersectionRatio>.3;clearTimeout(timer);timer=setTimeout(()=>{if(hidden!==hide)dock(hide);},hide?100:160);},{threshold:[0,.3,.6,1]});observer.observe(original);
  new MutationObserver(update).observe($('profit'),{childList:true,subtree:true,characterData:true});for(const b of document.querySelectorAll('[data-lang]'))b.addEventListener('click',update);window.addEventListener('resize',()=>{if(hidden){aim(floating,original);aim(badge,profitTarget);}},{passive:true});update();
 })();
@@ -376,5 +376,20 @@ dialog.dialog-motion-closing{pointer-events:none}
   requestAnimationFrame(()=>requestAnimationFrame(()=>{if(badge)void badge.getBoundingClientRect();document.body.classList.add('profit-position-ready');}));
  }
  if(document.readyState==='complete')reveal();else window.addEventListener('load',reveal,{once:true});
+})();
+</script><style id="mobile-profit-in-brand-header">
+@media(max-width:600px){
+.mobile-profit-anchor{position:relative}
+#floating-statement{display:none!important}
+body .mobile-profit-anchor #floating-profit,body.summary-at-top .mobile-profit-anchor #floating-profit{position:absolute;top:calc(50% - 23px);right:8px;bottom:auto;left:auto;width:96px;min-height:46px;margin:0;scale:1!important;transform:none!important;transition:none!important;visibility:visible!important;opacity:1!important;z-index:2}
+body:has(dialog[open]) .mobile-profit-anchor #floating-profit{visibility:hidden!important;opacity:0!important}
+}
+</style><script id="mobile-profit-header-placement">
+(()=>{
+ const badge=document.getElementById('floating-profit'),header=document.querySelector('.team-logos')?.closest('header');if(!badge||!header)return;
+ const marker=document.createComment('desktop-profit-position');badge.before(marker);header.classList.add('mobile-profit-anchor');
+ const mobile=matchMedia('(max-width:600px)');
+ function place(){if(mobile.matches){header.append(badge);badge.classList.remove('is-hidden');badge.setAttribute('aria-hidden','false');}else{marker.after(badge);}}
+ mobile.addEventListener('change',place);place();
 })();
 </script></html>
