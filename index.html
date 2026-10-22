@@ -412,4 +412,17 @@ body:has(dialog[open]) #floating-profit,body:has(dialog[open]) #floating-stateme
 body #floating-profit,body #floating-statement{transform-origin:center center}
 body #floating-profit.is-hidden,body #floating-statement.is-hidden{scale:1;transform:translate(var(--dock-x,0px),var(--dock-y,0px)) scale(var(--dock-scale,.82))}
 }
+</style><style id="mobile-compact-flags-and-top-donations">
+@media(max-width:600px){
+.top-controls{position:relative;display:flex;align-items:flex-start;min-height:81px;margin-bottom:14px;gap:0;overflow:visible}
+.top-controls .languages{display:flex;flex-direction:column;flex-wrap:nowrap;gap:3px;width:34px;margin:0;align-items:flex-start}
+.top-controls .languages button{display:flex;justify-content:center;align-items:center;width:32px;min-width:32px;height:25px;min-height:25px;padding:3px;gap:0;border-radius:6px}
+.top-controls .languages button span{display:none}
+.top-controls .languages button img{display:block;width:22px;height:15px;object-fit:contain}
+.top-controls .support-row{position:absolute;top:-35px;right:0;left:auto;display:flex;flex-wrap:nowrap;justify-content:flex-end;align-items:flex-start;gap:7px;margin:0;z-index:30}
+.top-controls .support-row>a.support-link,.top-controls .parcel-donate summary.support-link{width:clamp(90px,calc((100vw - 84px)/2),140px);height:32px;min-height:32px;padding:4px 6px;gap:5px;font-size:10px;border-radius:8px;white-space:nowrap}
+.top-controls .support-link img,.top-controls .parcel-donate summary img{width:20px;height:20px}
+.top-controls .parcel-donate{position:relative}
+.top-controls .parcel-donate .parcel-message{position:absolute;top:calc(100% + 8px);left:0;right:auto;bottom:auto;width:min(220px,calc(100vw - 90px));max-width:none;margin:0;box-sizing:border-box;transform:none;transform-origin:top left;scale:1;z-index:40;background:linear-gradient(135deg,#28333df5,#131d27fa);backdrop-filter:blur(12px)}
+}
 </style></html>
